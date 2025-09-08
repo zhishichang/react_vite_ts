@@ -1,15 +1,13 @@
 import { message } from "antd";
-import axios from "axios";
-import type { Result } from "../types";
-
+import axios, { type AxiosRequestConfig } from "axios";
 // 创建axios实例
-const request = axios.create({
+const instance = axios.create({
   baseURL: "http://localhost:3000",
   timeout: 5000,
 });
 
 // 添加请求拦截器
-request.interceptors.request.use(
+instance.interceptors.request.use(
   function (config) {
     // 在发送请求之前判断本地是否存在token，有则添加到请求头中
     const token = sessionStorage.getItem("token");
@@ -25,10 +23,9 @@ request.interceptors.request.use(
 );
 
 // 添加响应拦截器
-request.interceptors.response.use(
+instance.interceptors.response.use(
   (response) => {
-    const result: Result = response.data; // 这里就不会报错
-    return result.data;
+    return response;
   },
   function (error) {
     switch (error.response.status) {
@@ -47,5 +44,25 @@ request.interceptors.response.use(
   }
 );
 
+function request(config: AxiosRequestConfig) {
+  // 统一的响应处理 API {code,msg,data}
+  // 给我传一个配置项 可以控制我是否要进行统一的响应处理
+  return instance.request(config).then((res) => res.data.data);
+}
 // 暴露封装的axios实例
-export default request;
+export default {
+  get<T>(url: string, params: object): Promise<T> {
+    return request({
+      url,
+      params,
+    });
+  },
+  // 泛型T 代表API返回的数据类型
+  post<T>(url: string, params: object): Promise<T> {
+    return request({
+      url,
+      method: "post",
+      data: params,
+    });
+  },
+};
