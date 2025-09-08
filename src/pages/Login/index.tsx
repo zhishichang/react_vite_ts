@@ -1,10 +1,12 @@
 import React from "react";
 import { Button, Form, Input } from "antd";
 import styles from "./index.module.css";
+import type { Login } from "../../types";
+import request from "../../utils/request";
 
 const Login: React.FC = () => {
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
+  const onFinish = async (values: Login.params) => {
+    const result = await request.post("/api/users/login", values);
   };
   return (
     <div className={styles.login}>
