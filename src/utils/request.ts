@@ -1,3 +1,4 @@
+import { hideLoading, showLoading } from "@/components/Loading";
 import { message } from "antd";
 import axios, { type AxiosRequestConfig } from "axios";
 
@@ -11,6 +12,7 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
   function (config) {
+    showLoading();
     // 在发送请求之前判断本地是否存在token，有则添加到请求头中
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -27,9 +29,11 @@ instance.interceptors.request.use(
 // 添加响应拦截器
 instance.interceptors.response.use(
   (response) => {
+    hideLoading();
     return response;
   },
   function (error) {
+    hideLoading();
     switch (error.response.status) {
       // token过期 token无效 重新登录
       case 401:
