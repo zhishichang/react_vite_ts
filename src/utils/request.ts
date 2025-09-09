@@ -1,4 +1,4 @@
-import { hideLoading, showLoading } from "@/components/Loading";
+import { hideLoading, showLoading } from "@/utils/loading";
 import { message } from "antd";
 import axios, { type AxiosRequestConfig } from "axios";
 
