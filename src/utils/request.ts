@@ -1,8 +1,10 @@
 import { message } from "antd";
 import axios, { type AxiosRequestConfig } from "axios";
+
 // 创建axios实例
 const instance = axios.create({
-  baseURL: "http://localhost:3000",
+  // 根据构建环境的不同获取不同的值
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 5000,
 });
 

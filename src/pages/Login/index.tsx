@@ -1,11 +1,11 @@
 import React from "react";
 import { Button, Form, Input } from "antd";
 import styles from "./index.module.css";
-import type { Login } from "../../types";
-import { userLogin } from "../../service/user";
+import type { Login as LoginType } from "@/types";
+import { userLogin } from "@/service/user";
 
 const Login: React.FC = () => {
-  const onFinish = async (values: Login.params) => {
+  const onFinish = async (values: LoginType.params) => {
     // 业务数据（API返回的数据 并且不包括code msg）
     const result = await userLogin(values);
     console.log(result);
