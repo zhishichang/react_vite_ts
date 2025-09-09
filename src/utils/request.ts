@@ -12,7 +12,7 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
   function (config) {
-    showLoading();
+    if ((config as any).showLoading) showLoading();
     // 在发送请求之前判断本地是否存在token，有则添加到请求头中
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -29,10 +29,18 @@ instance.interceptors.request.use(
 // 添加响应拦截器
 instance.interceptors.response.use(
   (response) => {
+    // 如果后端状态码为2xx
     hideLoading();
-    return response;
+    if (response.data.code === 200) {
+      return response;
+    } else {
+      alert(response.data.msg);
+      // message.error(response.data.msg);
+      return Promise.reject(response);
+    }
   },
   function (error) {
+    // 如果后端状态码不是2xx
     hideLoading();
     switch (error.response.status) {
       // token过期 token无效 重新登录
@@ -53,8 +61,19 @@ instance.interceptors.response.use(
 function request(config: AxiosRequestConfig) {
   // 统一的响应处理 API {code,msg,data}
   // 给我传一个配置项 可以控制我是否要进行统一的响应处理
+  console.log("request--->", config);
+  // 真正发送网络请求的方法
   return instance.request(config).then((res) => res.data.data);
 }
+interface IConfig {
+  showLoading?: boolean;
+  showError?: boolean;
+}
+const defaultConfig: IConfig = {
+  // module 默认开启 全局的loading 和 error 提示
+  showLoading: true,
+  showError: true,
+};
 // 暴露封装的axios实例
 export default {
   get<T>(url: string, params: object): Promise<T> {
@@ -64,11 +83,17 @@ export default {
     });
   },
   // 泛型T 代表API返回的数据类型
-  post<T>(url: string, params: object): Promise<T> {
+  post<T>(
+    url: string,
+    params: object,
+    options: IConfig = defaultConfig
+  ): Promise<T> {
+    console.log("post--->", options);
     return request({
       url,
       method: "post",
       data: params,
+      ...options,
     });
   },
 };

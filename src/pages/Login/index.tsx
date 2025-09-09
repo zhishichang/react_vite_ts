@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Form, Input } from "antd";
 import styles from "./index.module.css";
 import type { Login as LoginType } from "@/types";
 import { userLogin } from "@/service/user";
 
 const Login: React.FC = () => {
+  const [loading, setLoading] = useState(false);
   const onFinish = async (values: LoginType.params) => {
     // 业务数据（API返回的数据 并且不包括code msg）
+    setLoading(true);
     const result = await userLogin(values);
+    // if (result.code === 200) {
+    //   //
+    // } else {
+    //   //
+    // }
+    setLoading(false);
     console.log(result);
   };
   return (
@@ -35,7 +43,7 @@ const Login: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" block htmlType="submit">
+            <Button type="primary" block htmlType="submit" loading={loading}>
               登录
             </Button>
           </Form.Item>
