@@ -12,7 +12,7 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
   function (config) {
-    if ((config as any).showLoading) showLoading();
+    if (config.showLoading) showLoading();
     // 在发送请求之前判断本地是否存在token，有则添加到请求头中
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -68,7 +68,7 @@ function request(config: AxiosRequestConfig) {
   // 给我传一个配置项 可以控制我是否要进行统一的响应处理
   // 真正发送网络请求的方法
   return instance.request(config).then((res) => {
-    if ((config as any).showError) {
+    if (config.showError) {
       // 如果使用全局的错误提示 直接返回业务数据 data
       return res.data.data;
     } else {

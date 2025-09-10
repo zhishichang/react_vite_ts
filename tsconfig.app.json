@@ -32,6 +32,8 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src"
+    "src",
+    "typings.d.ts",
+    "src/types/lodash.d.ts"
   ]
 }
