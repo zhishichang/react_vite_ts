@@ -34,9 +34,14 @@ instance.interceptors.response.use(
     if (response.data.code === 200) {
       return response;
     } else {
-      alert(response.data.msg);
-      // message.error(response.data.msg);
-      return Promise.reject(response);
+      if ((response.config as any).showError) {
+        // 展示全局错误信息
+        alert(response.data.msg);
+        // message.error(response.data.msg);
+        return Promise.reject(response);
+      } else {
+        return Promise.resolve(response);
+      }
     }
   },
   function (error) {
@@ -61,16 +66,23 @@ instance.interceptors.response.use(
 function request(config: AxiosRequestConfig) {
   // 统一的响应处理 API {code,msg,data}
   // 给我传一个配置项 可以控制我是否要进行统一的响应处理
-  console.log("request--->", config);
   // 真正发送网络请求的方法
-  return instance.request(config).then((res) => res.data.data);
+  return instance.request(config).then((res) => {
+    if ((config as any).showError) {
+      // 如果使用全局的错误提示 直接返回业务数据 data
+      return res.data.data;
+    } else {
+      return res.data;
+      //如果要是不使用全局的错误提示 给组件返回 code msg data
+    }
+  });
 }
 interface IConfig {
   showLoading?: boolean;
   showError?: boolean;
 }
 const defaultConfig: IConfig = {
-  // module 默认开启 全局的loading 和 error 提示
+  //默认开启 全局的loading 和 error 提示
   showLoading: true,
   showError: true,
 };
@@ -88,12 +100,11 @@ export default {
     params: object,
     options: IConfig = defaultConfig
   ): Promise<T> {
-    console.log("post--->", options);
     return request({
       url,
       method: "post",
       data: params,
-      ...options,
+      ...Object.assign(defaultConfig, options),
     });
   },
 };

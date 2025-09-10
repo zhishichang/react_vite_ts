@@ -1,25 +1,30 @@
 import React, { useState } from "react";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import styles from "./index.module.css";
 import type { Login as LoginType } from "@/types";
 import { userLogin } from "@/service/user";
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
   const onFinish = async (values: LoginType.params) => {
     // 业务数据（API返回的数据 并且不包括code msg）
     setLoading(true);
-    const result = await userLogin(values);
-    // if (result.code === 200) {
-    //   //
-    // } else {
-    //   //
-    // }
-    setLoading(false);
-    console.log(result);
+    try {
+      const result = await userLogin(values);
+      console.log(result);
+      if (result.code != 200) {
+        messageApi.error(result.msg);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className={styles.login}>
+      {contextHolder}
       <div className={styles.loginWrapper}>
         <div className={styles.title}>系统登录</div>
         <Form
