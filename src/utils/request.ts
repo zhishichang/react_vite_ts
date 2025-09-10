@@ -1,5 +1,5 @@
+import { message } from "@/components/AntdGloble";
 import { hideLoading, showLoading } from "@/utils/loading";
-import { message } from "antd";
 import axios, { type AxiosRequestConfig } from "axios";
 
 // 创建axios实例
@@ -36,8 +36,7 @@ instance.interceptors.response.use(
     } else {
       if ((response.config as any).showError) {
         // 展示全局错误信息
-        alert(response.data.msg);
-        // message.error(response.data.msg);
+        message.error(response.data.msg);
         return Promise.reject(response);
       } else {
         return Promise.resolve(response);
